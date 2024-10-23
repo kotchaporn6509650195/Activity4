@@ -1,28 +1,28 @@
-name: Node.js CI
+name: Node.js CI # This sets the name of the workflow to "Node.js CI"
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+on: # This section defines the events that trigger the workflow
+  push: # Trigger the workflow when code is pushed to the repository
+    branches: [ main ] # Only trigger on push events to the 'main' branch
+  pull_request: # Trigger the workflow when a pull request is opened or updated
+    branches: [ main ] # Only trigger on pull requests targeting the 'main' branch
 
 jobs:
-  build:
+  build: # This defines the build job
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }} # Specifies the OS to run the job on (based on matrix configuration)
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        os: [ubuntu-latest, windows-latest] # Specifies the operating systems to test on (Ubuntu and Windows)
+        node-version: [18.x, 20.x, 22.x] # Specifies the Node.js versions to test with (18.x, 20.x, 22.x)
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
+    - uses: actions/checkout@v4 # Checks out the repository code to the runner
+    - name: Use Node.js ${{ matrix.node-version }} # Uses a specific Node.js version based on the matrix
+      uses: actions/setup-node@v4 # Action to set up the specified Node.js version
       with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+        node-version: ${{ matrix.node-version }} # Passes the Node.js version from the matrix
+        cache: 'npm' # Caches npm dependencies for faster builds
+    - run: npm ci # Installs dependencies using 'npm ci' which ensures a clean install of the dependencies
+    - run: npm run build --if-present # Runs the build script if it's defined in package.json
+    - run: npm test # Runs the tests defined in package.json (using the test script)
